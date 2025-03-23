@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Market - LinkedIn Style</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Login Page -->
+    <div class="login-container" id="login-page">
+        <h2>Login</h2>
+        <input type="email" id="email" placeholder="Enter your email" required>
+        <input type="password" id="password" placeholder="Enter your password" required>
+        <p class="error" id="error-msg"></p>
+        <button type="button" onclick="login()">Login</button>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="container" id="dashboard" style="display: none;">
+        <!-- Header -->
+        <div class="header">
+            <div class="menu-icon" onclick="toggleSidebar()">&#9776;</div>
+            <div class="logo">Skill Market</div>
+            <input type="text" placeholder="Search for jobs, people, companies...">
+            <div class="user" onclick="logout()">Logout</div>
+        </div>
+
+        <div class="dashboard-container">
+            <!-- Sidebar -->
+            <div class="sidebar" id="sidebar">
+                <div class="user-details">
+                    <img src="user-avatar.png" alt="User Avatar">
+                    <h3 id="user-name">John Doe</h3>
+                    <p id="user-email">john.doe@example.com</p>
+                    <ul class="user-options">
+                        <li onclick="loadPage('edit-profile')">Edit Profile</li>
+                        <li onclick="loadPage('saved-jobs')">Saved Jobs</li>
+                        <li onclick="loadPage('settings')">Settings</li>
+                        <li onclick="logout()">Logout</li>
+                    </ul>
+                </div>
+
+                <ul>
+                    <li onclick="loadPage('jobs')">💼 Jobs</li>
+                    <li onclick="loadPage('network')">🔗 My Network</li>
+                    <li onclick="loadPage('messages')">✉️ Messages</li>
+                    <li onclick="loadPage('notifications')">🔔 Notifications</li>
+                </ul>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="main-content" id="main-content">
+                <h2>Welcome to Skill Market</h2>
+                <p>Select an option from the sidebar to get started.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="edit-profile-modal" class="modal">
+        <div class="modal-content">
+            <h2>Edit Profile</h2>
+            <label>Name:</label>
+            <input type="text" id="edit-name">
+            <label>Email:</label>
+            <input type="email" id="edit-email">
+            <label>Phone:</label>
+            <input type="text" id="edit-phone">
+            <label>Date of Birth:</label>
+            <input type="date" id="edit-dob">
+            <label>Sex:</label>
+            <select id="edit-sex">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+            <label>Father's Name:</label>
+            <input type="text" id="edit-father-name">
+            <label>Address Proof (Aadhar):</label>
+            <input type="text" id="edit-aadhar">
+            <button onclick="saveProfile()">Save</button>
+            <button onclick="closeProfileModal()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Script section needs to be updated -->
+    <script>
+        // Define user profiles with their respective images and additional profile info
+        const userProfiles = {
+            'gourav@gmail.com': {
+                name: 'Gourav',
+                image: 'images/gourav.jpg',
+                phone: '',
+                dob: '',
+                sex: 'Male',
+                fatherName: '',
+                aadhar: ''
+            },
+            'vivek@gmail.com': {
+                name: 'Vivek',
+                image: 'images/vivek.jpg',
+                phone: '',
+                dob: '',
+                sex: 'Male',
+                fatherName: '',
+                aadhar: ''
+            },
+            'sahishnav@gmail.com': {
+                name: 'Sahishnav',
+                image: 'images/sahishnav.jpg',
+                phone: '',
+                dob: '',
+                sex: 'Male',
+                fatherName: '',
+                aadhar: ''
+            },
+            'vikas@gmail.com': {
+                name: 'Vikas',
+                image: 'images/vikas.jpg',
+                phone: '',
+                dob: '',
+                sex: 'Male',
+                fatherName: '',
+                aadhar: ''
+            }
+        };
+
+        function login() {
+            // Existing login function remains unchanged
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('error-msg');
+            
+            // List of allowed emails (keys from userProfiles)
+            const allowedEmails = Object.keys(userProfiles);
+            
+            // Common password for all accounts
+            const correctPassword = 'password123';
+            
+            if (allowedEmails.includes(email) && password === correctPassword) {
+                errorMsg.textContent = '';
+                document.getElementById('login-page').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                
+                // Set user info in dashboard
+                document.getElementById('user-email').textContent = email;
+                document.getElementById('user-name').textContent = userProfiles[email].name;
+                
+                // Set the user's profile image
+                document.querySelector('.user-details img').src = userProfiles[email].image;
+                
+                // Store current user in session
+                sessionStorage.setItem('currentUser', email);
+            } else {
+                errorMsg.textContent = 'Invalid email or password';
+            }
+        }
+
+        // Function to open the edit profile modal and populate with current user data
+        function editProfile() {
+            const currentUser = sessionStorage.getItem('currentUser');
+            if (currentUser && userProfiles[currentUser]) {
+                const profile = userProfiles[currentUser];
+                
+                // Populate the form with current user data
+                document.getElementById('edit-name').value = profile.name || '';
+                document.getElementById('edit-email').value = currentUser;
+                document.getElementById('edit-phone').value = profile.phone || '';
+                document.getElementById('edit-dob').value = profile.dob || '';
+                document.getElementById('edit-sex').value = profile.sex || 'Male';
+                document.getElementById('edit-father-name').value = profile.fatherName || '';
+                document.getElementById('edit-aadhar').value = profile.aadhar || '';
+                
+                // Show the modal
+                document.getElementById('edit-profile-modal').style.display = 'block';
+            }
+        }
+
+        // Function to save profile changes
+        function saveProfile() {
+            const currentUser = sessionStorage.getItem('currentUser');
+            if (currentUser && userProfiles[currentUser]) {
+                // Get values from form
+                const name = document.getElementById('edit-name').value;
+                const phone = document.getElementById('edit-phone').value;
+                const dob = document.getElementById('edit-dob').value;
+                const sex = document.getElementById('edit-sex').value;
+                const fatherName = document.getElementById('edit-father-name').value;
+                const aadhar = document.getElementById('edit-aadhar').value;
+                
+                // Update user profile
+                userProfiles[currentUser].name = name;
+                userProfiles[currentUser].phone = phone;
+                userProfiles[currentUser].dob = dob;
+                userProfiles[currentUser].sex = sex;
+                userProfiles[currentUser].fatherName = fatherName;
+                userProfiles[currentUser].aadhar = aadhar;
+                
+                // Update displayed name in the sidebar
+                document.getElementById('user-name').textContent = name;
+                
+                // Save to localStorage for persistence
+                localStorage.setItem('userProfiles', JSON.stringify(userProfiles));
+                
+                alert('Profile updated successfully!');
+                
+                // Return to dashboard
+                loadPage('default');
+            }
+        }
+
+        // Function to close the profile modal
+        function closeProfileModal() {
+            document.getElementById('edit-profile-modal').style.display = 'none';
+        }
+
+        // Load saved profiles from localStorage if available
+        function logout() {
+            // Clear session storage
+            sessionStorage.removeItem('currentUser');
+            
+            // Hide dashboard and show login page
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('login-page').style.display = 'block';
+            
+            console.log("User logged out successfully");
+        }
+        
+        // Load saved profiles from localStorage if available
+        window.onload = function() {
+            const savedProfiles = localStorage.getItem('userProfiles');
+            if (savedProfiles) {
+                Object.assign(userProfiles, JSON.parse(savedProfiles));
+            }
+        };
+        
+        // Initialize the application when the document is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("Document loaded");
+            
+            // Add event listener for logout button
+            const logoutButton = document.querySelector('.user');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', function() {
+                    logout();
+                });
+            }
+            
+            // Also add event listener for logout in sidebar
+            const sidebarLogout = document.querySelector('.user-options li:last-child');
+            if (sidebarLogout) {
+                sidebarLogout.addEventListener('click', function() {
+                    logout();
+                });
+            }
+            
+            // Load saved profiles from localStorage if available
+            window.onload = function() {
+                const savedProfiles = localStorage.getItem('userProfiles');
+                if (savedProfiles) {
+                    Object.assign(userProfiles, JSON.parse(savedProfiles));
+                }
+            };
+        });
+        
+        // Function to load different pages in the main content area
+        function loadPage(page) {
+            // Check if user is logged in
+            const currentUser = sessionStorage.getItem('currentUser');
+            if (!currentUser) {
+                alert('Please login first to access this feature');
+                return;
+            }
+            
+            const mainContent = document.getElementById('main-content');
+            
+            // Clear current content
+            mainContent.innerHTML = '';
+            
+            // Add new content based on the selected page
+            switch(page) {
+                case 'jobs':
+                    mainContent.innerHTML = `
+                        <h2>Jobs</h2>
+                        <div class="job-filters">
+                            <input type="text" id="job-search" placeholder="Search for jobs...">
+                            <select id="job-location">
+                                <option value="">All Locations</option>
+                                <option value="Bangalore">Bangalore</option>
+                                <option value="Delhi">Delhi</option>
+                                <option value="Mumbai">Mumbai</option>
+                                <option value="Hyderabad">Hyderabad</option>
+                                <option value="Chennai">Chennai</option>
+                                <option value="Remote">Remote</option>
+                            </select>
+                            <select id="job-type">
+                                <option value="">All Job Types</option>
+                                <option value="Full-time">Full-time</option>
+                                <option value="Part-time">Part-time</option>
+                                <option value="Contract">Contract</option>
+                                <option value="Internship">Internship</option>
+                            </select>
+                            <button onclick="filterJobs()">Filter</button>
+                        </div>
+                        
+                        <div class="job-listings">
+                            <div class="job-card" data-job-id="job1">
+                                <h3>Software Developer</h3>
+                                <p class="company-name"><strong>Company:</strong> Tech Solutions Inc.</p>
+                                <p class="job-location"><strong>Location:</strong> Bangalore, India</p>
+                                <p class="job-salary"><strong>Salary:</strong> ₹8,00,000 - ₹12,00,000 per annum</p>
+                                <p class="job-type"><strong>Type:</strong> Full-time</p>
+                                <p class="job-description">Build and maintain web applications using modern technologies like React, Node.js, and MongoDB.</p>
+                                <div class="job-actions">
+                                    <button onclick="applyForJob('job1')">Apply Now</button>
+                                    <button onclick="saveJob('job1', 'Software Developer', 'Tech Solutions Inc.')" class="save-job-btn">Save Job</button>
+                                </div>
+                            </div>
+                            
+                            <div class="job-card" data-job-id="job2">
+                                <h3>Data Scientist</h3>
+                                <p class="company-name"><strong>Company:</strong> Analytics Pro</p>
+                                <p class="job-location"><strong>Location:</strong> Hyderabad, India</p>
+                                <p class="job-salary"><strong>Salary:</strong> ₹10,00,000 - ₹15,00,000 per annum</p>
+                                <p class="job-type"><strong>Type:</strong> Full-time</p>
+                                <p class="job-description">Analyze large datasets and build machine learning models to derive business insights.</p>
+                                <div class="job-actions">
+                                    <button onclick="applyForJob('job2')">Apply Now</button>
+                                    <button onclick="saveJob('job2', 'Data Scientist', 'Analytics Pro')" class="save-job-btn">Save Job</button>
+                                </div>
+                            </div>
+                            
+                            <div class="job-card" data-job-id="job3">
+                                <h3>UI/UX Designer</h3>
+                                <p class="company-name"><strong>Company:</strong> Creative Designs</p>
+                                <p class="job-location"><strong>Location:</strong> Mumbai, India</p>
+                                <p class="job-salary"><strong>Salary:</strong> ₹6,00,000 - ₹9,00,000 per annum</p>
+                                <p class="job-type"><strong>Type:</strong> Full-time</p>
+                                <p class="job-description">Create user-friendly interfaces and improve user experience for web and mobile applications.</p>
+                                <div class="job-actions">
+                                    <button onclick="applyForJob('job3')">Apply Now</button>
+                                    <button onclick="saveJob('job3', 'UI/UX Designer', 'Creative Designs')" class="save-job-btn">Save Job</button>
+                                </div>
+                            </div>
+                            
+                            <div class="job-card" data-job-id="job4">
+                                <h3>DevOps Engineer</h3>
+                                <p class="company-name"><strong>Company:</strong> Cloud Systems</p>
+                                <p class="job-location"><strong>Location:</strong> Remote</p>
+                                <p class="job-salary"><strong>Salary:</strong> ₹9,00,000 - ₹14,00,000 per annum</p>
+                                <p class="job-type"><strong>Type:</strong> Full-time</p>
+                                <p class="job-description">Implement CI/CD pipelines and manage cloud infrastructure using AWS, Docker, and Kubernetes.</p>
+                                <div class="job-actions">
+                                    <button onclick="applyForJob('job4')">Apply Now</button>
+                                    <button onclick="saveJob('job4', 'DevOps Engineer', 'Cloud Systems')" class="save-job-btn">Save Job</button>
+                                </div>
+                            </div>
+                            
+                            <div class="job-card" data-job-id="job5">
+                                <h3>Marketing Intern</h3>
+                                <p class="company-name"><strong>Company:</strong> Digital Marketing Solutions</p>
+                                <p class="job-location"><strong>Location:</strong> Delhi, India</p>
+                                <p class="job-salary"><strong>Salary:</strong> ₹15,000 - ₹25,000 per month</p>
+                                <p class="job-type"><strong>Type:</strong> Internship</p>
+                                <p class="job-description">Assist in creating and implementing digital marketing campaigns across various platforms.</p>
+                                <div class="job-actions">
+                                    <button onclick="applyForJob('job5')">Apply Now</button>
+                                    <button onclick="saveJob('job5', 'Marketing Intern', 'Digital Marketing Solutions')" class="save-job-btn">Save Job</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'edit-profile':
+                    const profile = userProfiles[currentUser] || {};
+                    
+                    mainContent.innerHTML = `
+                        <h2>Edit Profile</h2>
+                        <div class="profile-form">
+                            <div class="form-group">
+                                <label>Name:</label>
+                                <input type="text" id="edit-name" value="${profile.name || ''}">
+                            </div>
+                            <div class="form-group">
+                                <label>Email:</label>
+                                <input type="email" id="edit-email" value="${currentUser || ''}" readonly>
+                                <small>Email cannot be changed</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone:</label>
+                                <input type="text" id="edit-phone" value="${profile.phone || ''}">
+                            </div>
+                            <div class="form-group">
+                                <label>Date of Birth:</label>
+                                <input type="date" id="edit-dob" value="${profile.dob || ''}">
+                            </div>
+                            <div class="form-group">
+                                <label>Sex:</label>
+                                <select id="edit-sex">
+                                    <option value="Male" ${profile.sex === 'Male' ? 'selected' : ''}>Male</option>
+                                    <option value="Female" ${profile.sex === 'Female' ? 'selected' : ''}>Female</option>
+                                    <option value="Other" ${profile.sex === 'Other' ? 'selected' : ''}>Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Father's Name:</label>
+                                <input type="text" id="edit-father-name" value="${profile.fatherName || ''}">
+                            </div>
+                            <div class="form-group">
+                                <label>Address Proof (Aadhar):</label>
+                                <input type="text" id="edit-aadhar" value="${profile.aadhar || ''}">
+                            </div>
+                            <button onclick="saveProfileChanges()">Save Changes</button>
+                        </div>
+                    `;
+                    break;
+                case 'settings':
+                    // Get current settings or set defaults
+                    const currentSettings = JSON.parse(localStorage.getItem(`settings_${currentUser}`) || '{}');
+                    
+                    mainContent.innerHTML = `
+                        <h2>Settings</h2>
+                        <div class="settings-container">
+                            <div class="settings-section">
+                                <h3>Notification Settings</h3>
+                                <div class="setting-item">
+                                    <label for="email-notifications">
+                                        <input type="checkbox" id="email-notifications" ${currentSettings.emailNotifications ? 'checked' : ''}>
+                                        Email Notifications
+                                    </label>
+                                    <p class="setting-description">Receive job alerts and messages via email</p>
+                                </div>
+                                <div class="setting-item">
+                                    <label for="job-alerts">
+                                        <input type="checkbox" id="job-alerts" ${currentSettings.jobAlerts ? 'checked' : ''}>
+                                        Job Alerts
+                                    </label>
+                                    <p class="setting-description">Get notified about new job opportunities</p>
+                                </div>
+                            </div>
+                            
+                            <div class="settings-section">
+                                <h3>Privacy Settings</h3>
+                                <div class="setting-item">
+                                    <label for="profile-visibility">
+                                        <input type="checkbox" id="profile-visibility" ${currentSettings.profileVisibility ? 'checked' : ''}>
+                                        Profile Visibility
+                                    </label>
+                                    <p class="setting-description">Make your profile visible to recruiters</p>
+                                </div>
+                                <div class="setting-item">
+                                    <label for="show-phone">
+                                        <input type="checkbox" id="show-phone" ${currentSettings.showPhone ? 'checked' : ''}>
+                                        Show Phone Number
+                                    </label>
+                                    <p class="setting-description">Display your phone number on your profile</p>
+                                </div>
+                                <div class="setting-item">
+                                    <label for="show-email">
+                                        <input type="checkbox" id="show-email" ${currentSettings.showEmail ? 'checked' : ''}>
+                                        Show Email
+                                    </label>
+                                    <p class="setting-description">Display your email on your profile</p>
+                                </div>
+                            </div>
+                            
+                            <div class="settings-section">
+                                <h3>Appearance</h3>
+                                <div class="setting-item">
+                                    <label for="theme-select">Theme</label>
+                                    <select id="theme-select">
+                                        <option value="light" ${currentSettings.theme === 'light' ? 'selected' : ''}>Light</option>
+                                        <option value="dark" ${currentSettings.theme === 'dark' ? 'selected' : ''}>Dark</option>
+                                        <option value="system" ${currentSettings.theme === 'system' ? 'selected' : ''}>System Default</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="settings-section">
+                                <h3>Account Settings</h3>
+                                <div class="setting-item">
+                                    <button id="change-password-btn" class="secondary-btn">Change Password</button>
+                                </div>
+                                <div class="setting-item">
+                                    <button id="delete-account-btn" class="danger-btn">Delete Account</button>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button onclick="saveSettings()" class="save-btn">Save Settings</button>
+                                <button onclick="loadPage('default')" class="cancel-btn">Cancel</button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                
+                // ... other cases ...
+            }
+        }
+
+        // Function to save profile changes from the main content area
+        function saveProfileChanges() {
+            const currentUser = sessionStorage.getItem('currentUser');
+            if (currentUser) {
+                // Get values from form
+                const name = document.getElementById('edit-name').value;
+                const phone = document.getElementById('edit-phone').value;
+                const dob = document.getElementById('edit-dob').value;
+                const sex = document.getElementById('edit-sex').value;
+                const fatherName = document.getElementById('edit-father-name').value;
+                const aadhar = document.getElementById('edit-aadhar').value;
+                
+                // Update user profile
+                userProfiles[currentUser].name = name;
+                userProfiles[currentUser].phone = phone;
+                userProfiles[currentUser].dob = dob;
+                userProfiles[currentUser].sex = sex;
+                userProfiles[currentUser].fatherName = fatherName;
+                userProfiles[currentUser].aadhar = aadhar;
+                
+                // Update displayed name in the sidebar
+                document.getElementById('user-name').textContent = name;
+                
+                // Save to localStorage for persistence
+                localStorage.setItem('userProfiles', JSON.stringify(userProfiles));
+                
+                alert('Profile updated successfully!');
+                
+                // Return to dashboard
+                loadPage('default');
+            }
+        }
+
+        // Function to save settings
+        function saveSettings() {
+            const currentUser = sessionStorage.getItem('currentUser');
+            if (currentUser) {
+                // Get all settings values
+                const emailNotifications = document.getElementById('email-notifications').checked;
+                const jobAlerts = document.getElementById('job-alerts').checked;
+                const profileVisibility = document.getElementById('profile-visibility').checked;
+                const showPhone = document.getElementById('show-phone').checked;
+                const showEmail = document.getElementById('show-email').checked;
+                const theme = document.getElementById('theme-select').value;
+                
+                // Create settings object
+                const settings = {
+                    emailNotifications,
+                    jobAlerts,
+                    profileVisibility,
+                    showPhone,
+                    showEmail,
+                    theme
+                };
+                
+                // Save settings to localStorage
+                localStorage.setItem(`settings_${currentUser}`, JSON.stringify(settings));
+                
+                // Apply theme if changed
+                applyTheme(theme);
+                
+                alert('Settings saved successfully!');
+                
+                // Return to dashboard
+                loadPage('default');
+            }
+        }
+        
+        // Function to apply theme
+        function applyTheme(theme) {
+            const body = document.body;
+            
+            // Remove existing theme classes
+            body.classList.remove('theme-light', 'theme-dark');
+            
+            // Apply selected theme
+            if (theme === 'dark') {
+                body.classList.add('theme-dark');
+            } else if (theme === 'light') {
+                body.classList.add('theme-light');
+            } else if (theme === 'system') {
+                // Check system preference
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    body.classList.add('theme-dark');
+                } else {
+                    body.classList.add('theme-light');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
+
+// Function to apply for a job
+        function applyForJob(jobId) {
+            const currentUser = sessionStorage.getItem('currentUser');
+            if (!currentUser) {
+                alert('Please login first to apply for this job');
+                return;
+            }
+            
+            // Get job details
+            const jobCard = document.querySelector(`[data-job-id="${jobId}"]`);
+            const jobTitle = jobCard.querySelector('h3').textContent;
+            const company = jobCard.querySelector('.company-name').textContent.replace('Company:', '').trim();
+            
+            // Store application in localStorage
+            const applications = JSON.parse(localStorage.getItem(`applications_${currentUser}`) || '[]');
+            
+            // Check if already applied
+            const alreadyApplied = applications.some(app => app.jobId === jobId);
+            
+            if (alreadyApplied) {
+                alert('You have already applied for this job');
+                return;
+            }
+            
+            // Add new application
+            applications.push({
+                jobId,
+                jobTitle,
+                company,
+                date: new Date().toLocaleDateString(),
+                status: 'Applied'
+            });
+            
+            // Save to localStorage
+            localStorage.setItem(`applications_${currentUser}`, JSON.stringify(applications));
+            
+            alert(`Successfully applied for ${jobTitle} at ${company}`);
+        }
+        
+        // Function to save a job
+        function saveJob(jobId, jobTitle, company) {
+            const currentUser = sessionStorage.getItem('currentUser');
+            if (!currentUser) {
+                alert('Please login first to save this job');
+                return;
+            }
+            
+            // Store saved job in localStorage
+            const savedJobs = JSON.parse(localStorage.getItem(`savedJobs_${currentUser}`) || '[]');
+            
+            // Check if already saved
+            const alreadySaved = savedJobs.some(job => job.jobId === jobId);
+            
+            if (alreadySaved) {
+                alert('You have already saved this job');
+                return;
+            }
+            
+            // Add new saved job
+            savedJobs.push({
+                jobId,
+                jobTitle,
+                company,
+                dateSaved: new Date().toLocaleDateString()
+            });
+            
+            // Save to localStorage
+            localStorage.setItem(`savedJobs_${currentUser}`, JSON.stringify(savedJobs));
+            
+            alert(`Job saved: ${jobTitle} at ${company}`);
+        }
+        
+        // Function to filter jobs
+        function filterJobs() {
+            const searchTerm = document.getElementById('job-search').value.toLowerCase();
+            const location = document.getElementById('job-location').value;
+            const jobType = document.getElementById('job-type').value;
+            
+            const jobCards = document.querySelectorAll('.job-card');
+            
+            jobCards.forEach(card => {
+                const title = card.querySelector('h3').textContent.toLowerCase();
+                const jobLocation = card.querySelector('.job-location').textContent.toLowerCase();
+                const type = card.querySelector('.job-type').textContent.toLowerCase();
+                
+                const matchesSearch = !searchTerm || title.includes(searchTerm);
+                const matchesLocation = !location || jobLocation.includes(location.toLowerCase());
+                const matchesType = !jobType || type.includes(jobType.toLowerCase());
+                
+                if (matchesSearch && matchesLocation && matchesType) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
